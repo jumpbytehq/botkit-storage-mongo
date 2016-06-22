@@ -1,5 +1,5 @@
-var monk = require('monk');
-
+var mongoose = require('mongoose');
+var AnySchema = new Schema({ any: {} });
 /**
  * botkit-storage-mongo - MongoDB driver for Botkit
  *
@@ -13,11 +13,11 @@ module.exports = function(config) {
      * or
      * 'localhost/mydb,192.168.1.1'
      */
-    if (!config || !config.mongoUri) {
-        throw new Error('Need to provide mongo address.');
+    if (!config || !config.mongooseConnection ) {
+        throw new Error('Need to provide  moongoose connection.');
     }
 
-    var db = monk(config.mongoUri),
+    var db = mongooseConnection
         storage = {};
 
     ['teams', 'channels', 'users'].forEach(function(zone) {
@@ -35,14 +35,14 @@ module.exports = function(config) {
  * @returns {{get: get, save: save, all: all}}
  */
 function getStorage(db, zone) {
-    var table = db.get(zone);
+    var Zone = mongoose.model(zone, AnySchema);
 
     return {
         get: function(id, cb) {
-            table.findOne({id: id}, cb);
+            Zone.findOne({id: id}, cb);
         },
         save: function(data, cb) {
-            table.findAndModify({
+            Zone.findByIdAndModify({
                 id: data.id
             }, data, {
                 upsert: true,
@@ -50,7 +50,7 @@ function getStorage(db, zone) {
             }, cb);
         },
         all: function(cb) {
-            table.find({}, cb);
+            Zone.find({}, cb);
         }
     };
 }

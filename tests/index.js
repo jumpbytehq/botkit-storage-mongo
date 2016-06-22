@@ -12,7 +12,9 @@ describe('Mongo', function() {
         config;
 
     beforeEach(function() {
-        config = {mongoUri: 'http://someurl.somewhere.com'};
+        var mongoUri = process.env.MONGO_URL
+
+        config = {mongooseConneciton};
 
         collectionObj = {
             find: sinon.stub(),
